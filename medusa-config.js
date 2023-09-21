@@ -40,6 +40,7 @@ const plugins = [
     resolve: `@medusajs/file-local`,
     options: {
       upload_dir: "uploads",
+      backend_url: "https://yz-deco-backend-production.up.railway.app",
     },
   },
   {
