@@ -36,13 +36,6 @@ const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 const plugins = [
   `medusa-fulfillment-manual`,
   `medusa-payment-manual`,
-  // {
-  //   resolve: `@medusajs/file-local`,
-  //   options: {
-  //     upload_dir: "uploads",
-  //     backend_url: process.env.BACKEND_URL,
-  //   },
-  // },
   {
     resolve: "@medusajs/admin",
     /** @type {import('@medusajs/admin').PluginOptions} */
@@ -88,6 +81,11 @@ const projectConfig = {
   cookieSecret: process.env.COOKIE_SECRET,
   store_cors: STORE_CORS,
   database_url: DATABASE_URL,
+  database_extra: {
+        ssl: {
+            rejectUnauthorized: false
+        }
+    },
   admin_cors: ADMIN_CORS,
   redis_url: REDIS_URL
 };
