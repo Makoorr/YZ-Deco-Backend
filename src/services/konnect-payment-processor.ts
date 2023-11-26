@@ -107,10 +107,10 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
         const session_data = {
             ...context.paymentSessionData,
             "amount": context.amount,
-            "firstName": context.customer.first_name || context.paymentSessionData?.firstName || context.billing_address?.first_name || "",
-            "lastName": context.customer.last_name || context.paymentSessionData?.lastName || context.billing_address?.last_name || "",
-            "phoneNumber": context.customer.phone || context.paymentSessionData?.phoneNumber || context.billing_address?.phone || "",
-            "email": context.customer.email,
+            "firstName": context.customer?.first_name || context.paymentSessionData?.firstName || context.billing_address?.first_name || "",
+            "lastName": context.customer?.last_name || context.paymentSessionData?.lastName || context.billing_address?.last_name || "",
+            "phoneNumber": context.customer?.phone || context.paymentSessionData?.phoneNumber || context.billing_address?.phone || "",
+            "email": context.customer?.email,
         }
 
         const update_requests = {
