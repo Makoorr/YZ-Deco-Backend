@@ -82,7 +82,7 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
     async initiatePayment(context: PaymentProcessorContext): Promise<PaymentProcessorError | PaymentProcessorSessionResponse> {
         const update_requests = {
             customer_metadata: {
-                "metadata": context.customer.metadata,   
+                "metadata": context.customer?.metadata,   
             },
         }
         const res: Object = await this.initPaymentAPI(context);
@@ -91,10 +91,10 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
             ...res,
             "token": context.currency_code,
             "amount": context.amount,
-            "firstName": context.customer.first_name || context.billing_address?.first_name || context.paymentSessionData?.firstName || "",
-            "lastName": context.customer.last_name || context.billing_address?.last_name || context.paymentSessionData?.lastName || "",
-            "phoneNumber": context.customer.phone || context.billing_address?.phone || context.paymentSessionData?.phoneNumber || "",
-            "email": context.customer.email,
+            "firstName": context.customer?.first_name || context.billing_address?.first_name || context.paymentSessionData?.firstName || "",
+            "lastName": context.customer?.last_name || context.billing_address?.last_name || context.paymentSessionData?.lastName || "",
+            "phoneNumber": context.customer?.phone || context.billing_address?.phone || context.paymentSessionData?.phoneNumber || "",
+            "email": context.customer?.email,
         }
 
         return {
@@ -114,7 +114,7 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
         }
 
         const update_requests = {
-            customer_metadata: context.customer.metadata,
+            customer_metadata: context.customer?.metadata,
         }
 
         return {
