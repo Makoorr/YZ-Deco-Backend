@@ -8,7 +8,9 @@ import {
 } from "@medusajs/medusa";
 import { EOL } from "os";
 
-var request = require('request');
+const DEBUG = process.env.DEBUG || false;
+
+const request = require('request');
 
 class KonnectPaymentProcessor extends AbstractPaymentProcessor {
     static identifier = "konnect";
@@ -18,13 +20,15 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
         require('dotenv').config();
     }
 
-    protected async initPaymentAPI(postData) {
-        var content = {
+    async initPaymentAPI(postData) {
+        (DEBUG) && console.log("INIT_PAYMENT");
+        (DEBUG) && console.log(postData);
+        const content = {
             "receiverWalletId": process.env.WALLET_ID,
             "token": postData?.currency_code.toUpperCase() || postData.token.toUpperCase() || "TND",
             "amount": postData.amount,
             "type": "immediate",
-            "description": "Payment From Client:"+postData?.customer?.first_name+" "+postData?.customer?.last_name+" - Order:"+postData.resource_id+" - Amount:"+postData.amount+" "+postData?.currency_code.toUpperCase(),
+            "description": "Paiement du client:"+postData?.customer?.first_name+" "+postData?.customer?.last_name+" - Prix:"+postData.amount+" "+postData?.currency_code.toUpperCase(),
             "lifespan": 60,
             "checkoutForm": false,
             "addPaymentFeesToAmount": true,
@@ -40,7 +44,7 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
             "theme": "light",
         }
         
-        var clientServerOptions = {
+        const clientServerOptions = {
             uri: "https://api.preprod.konnect.network/api/v2/payments/init-payment",
             body: JSON.stringify(content),
             method: 'POST',
@@ -85,10 +89,10 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
                 "metadata": context.customer?.metadata,   
             },
         }
-        const res: Object = await this.initPaymentAPI(context);
+        // const res: Object = await this.initPaymentAPI(context);
 
         const session_data = {
-            ...res,
+            // ...res,
             "token": context.currency_code,
             "amount": context.amount,
             "firstName": context.customer?.first_name || context.billing_address?.first_name || context.paymentSessionData?.firstName || "",
@@ -104,14 +108,20 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
     }
 
     async updatePayment(context: PaymentProcessorContext): Promise<void | PaymentProcessorError | PaymentProcessorSessionResponse> {
+        // const res: Object = await this.initPaymentAPI(context);
+        
         const session_data = {
+            // ...res,
             ...context.paymentSessionData,
             "amount": context.amount,
             "firstName": context.customer?.first_name || context.paymentSessionData?.firstName || context.billing_address?.first_name || "",
             "lastName": context.customer?.last_name || context.paymentSessionData?.lastName || context.billing_address?.last_name || "",
             "phoneNumber": context.customer?.phone || context.paymentSessionData?.phoneNumber || context.billing_address?.phone || "",
             "email": context.customer?.email,
-        }
+        };
+
+        (DEBUG) && console.log("UPDATE_PAYMENT");
+        (DEBUG) && console.log(session_data);
 
         const update_requests = {
             customer_metadata: context.customer?.metadata,

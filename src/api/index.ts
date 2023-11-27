@@ -1,12 +1,18 @@
-import { Order, OrderService, PaymentSession } from "@medusajs/medusa";
+import { Order, OrderService } from "@medusajs/medusa";
 import { Router } from "express"
 import { EntityManager } from "typeorm"
+import cors from "cors"
+import KonnectPaymentProcessor from "../services/konnect-payment-processor";
 
 const dotenv = require("dotenv");
-var request = require('request');
+const express = require('express');
+const request = require('request');
 
 export default (rootDirectory, options) => {
     const router = Router()
+    const DEBUG = process.env.DEBUG || false;
+    router.use('/konnect-payUrl',cors())
+    router.use(express.json())
     router.get('/api/notification_payment', async function (req, res) {
         const manager: EntityManager = req.scope.resolve("manager");
         const orderRepo = manager.getRepository(Order);
@@ -42,6 +48,36 @@ export default (rootDirectory, options) => {
             }
         });
         res.status(200).end();
+    })
+
+    // This api generates the payUrl for the cartId sent in query and returns that payUrl
+    router.post('/konnect-payurl', async function (req, res) {
+        try {
+            (DEBUG) && console.log("PAYURL");
+            (DEBUG) && console.log(req.body);
+            const order = req.body;
+            const konnectPayment: KonnectPaymentProcessor = req.scope.resolve("konnectPaymentProcessorService");
+
+            var content = {
+                "currency_code": order.currency_code,
+                "amount": order.total,
+                "customer": {
+                    "first_name": order.shipping_address.first_name,
+                    "last_name": order.shipping_address.last_name,
+                    "phone": order.shipping_address.phone,
+                },
+                "email": order.email,
+                "resource_id": order.cart_id,
+            };
+
+            (DEBUG) && console.log("content", content);
+            
+            const result: Object = await konnectPayment.initPaymentAPI(content);
+            (DEBUG) && console.log("result", result);
+            return res.json(result);
+        } catch (error) {
+            return res.status(500);
+        }
     })
 
     // this redirects to frontend only ( no need to be authenticated )
