@@ -10,7 +10,7 @@ import { EOL } from "os";
 
 const DEBUG = process.env.DEBUG || false;
 
-// const request = require('request');
+const request = require('request');
 
 class KonnectPaymentProcessor extends AbstractPaymentProcessor {
     static identifier = "konnect";
@@ -56,19 +56,18 @@ class KonnectPaymentProcessor extends AbstractPaymentProcessor {
 
         // Return a Promise for the asynchronous operation
         return new Promise((resolve, reject) => {
-            reject("err"); // Reject the Promise in case of an error
-            // request(clientServerOptions, function (err, res) {
-            // if (err) {
-            //     reject(err); // Reject the Promise in case of an error
-            // } else {
-            //     try {
-            //         const data = JSON.parse(res.body);
-            //         resolve(data); // Resolve the Promise with res.body
-            //     } catch (error) {
-            //         reject(error); // Reject the Promise if there's an error
-            //     }
-            // }
-            // });
+            request(clientServerOptions, function (err, res) {
+            if (err) {
+                reject(err); // Reject the Promise in case of an error
+            } else {
+                try {
+                    const data = JSON.parse(res.body);
+                    resolve(data); // Resolve the Promise with res.body
+                } catch (error) {
+                    reject(error); // Reject the Promise if there's an error
+                }
+            }
+            });
         });
     }
 

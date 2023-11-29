@@ -12,6 +12,9 @@
     "headless",
     "medusa"
   ],
+  "engines": {
+    "npm": "9.5.0"
+  },  
   "scripts": {
     "clean": "cross-env ./node_modules/.bin/rimraf dist",
     "build": "cross-env npm run clean && npm run build:server  && npm run build:admin",
