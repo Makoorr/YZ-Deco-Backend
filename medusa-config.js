@@ -81,13 +81,13 @@ const projectConfig = {
   cookieSecret: process.env.COOKIE_SECRET,
   store_cors: STORE_CORS,
   database_url: DATABASE_URL,
-  database_extra: (process.env.NODE_ENV === "production") ? {
+  database_extra: {
     ssl: {
         rejectUnauthorized: false
-    }
-  } : {},
+    } ?? (process.env.NODE_ENV === "production")
+  },
   admin_cors: ADMIN_CORS,
-  redis_url: (process.env.NODE_ENV === "production") ? REDIS_URL : null
+  redis_url: REDIS_URL ?? (process.env.NODE_ENV === "production"),
 };
 
 /** @type {import('@medusajs/medusa').ConfigModule} */

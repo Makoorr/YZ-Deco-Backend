@@ -1,5 +1,6 @@
 /dist
 .env
+.env*
 .vscode
 .DS_Store
 /uploads
