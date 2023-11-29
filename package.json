@@ -14,7 +14,7 @@
   ],
   "engines": {
     "npm": "9.5.0"
-  },  
+  },
   "scripts": {
     "clean": "cross-env ./node_modules/.bin/rimraf dist",
     "build": "cross-env npm run clean && npm run build:server  && npm run build:admin",
@@ -53,6 +53,7 @@
     "medusa-payment-manual": "^1.0.24",
     "medusa-payment-stripe": "^6.0.3",
     "prism-react-renderer": "^2.0.4",
+    "request": "^2.88.2",
     "typeorm": "^0.3.16"
   },
   "devDependencies": {
