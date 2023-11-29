@@ -45,7 +45,7 @@ const OrderWidget = ( {order}: OrderDetailsWidgetProps ) => {
             })
 
             const data: paymentData = await response.json();
-            linkRef.current.innerHTML = `<a href=${data.payUrl} style='color: blue;'>Lien du paiement</a>`;
+            linkRef.current.innerHTML = `<a href=${data.payUrl} style='color: blue;' target='_blank' rel='noopener noreferrer'>Lien du paiement</a>`;
         } catch (error) {
             linkRef.current.innerHTML = "Erreur";
         }
