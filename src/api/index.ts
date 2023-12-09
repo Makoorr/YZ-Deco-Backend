@@ -7,6 +7,14 @@ import KonnectPaymentProcessor from "../services/konnect-payment-processor";
 const dotenv = require("dotenv");
 const express = require('express');
 const request = require('request');
+const { v4: uuidv4 } = require('uuid');
+
+const {
+    S3,
+    S3Client,
+} = require('@aws-sdk/client-s3')
+const multer  = require('multer');
+const multerS3  = require('multer-s3');
 
 export default (rootDirectory, options) => {
     const router = Router()
@@ -117,6 +125,49 @@ export default (rootDirectory, options) => {
 
         res.redirect(process.env.FRONTEND_URL+"/order/confirmed/"+orderId.id);
     })
-  
+    
+    const s3 = new S3({
+        region: process.env.S3_REGION,
+
+        credentials : {
+            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+            accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        },
+    });
+    
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    const upload = multer ({
+        storage: multerS3({
+            s3: s3,
+            bucket: process.env.S3_BUCKET,
+            acl: 'public-read',
+            key: (req, file, cb) => {
+                if (!allowedImageTypes.includes(file.mimetype)) {
+                    return cb(new Error('Invalid file type'), false);
+                }
+
+                const filename = `${uuidv4()}.jpg`;
+                cb(null, filename);
+            },
+        }),
+        limits: {
+            fileSize: 5 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            if (!allowedImageTypes.includes(file.mimetype)) {
+              return cb(new Error('Invalid file type'), false);
+            }
+            cb(null, true);
+          },
+    });
+
+    router.use('/upload',cors())
+    router.post('/upload', upload.single('image'), function (req, res) {
+        res.send({
+            message: "uploaded",
+            file: {...req.file},
+        });
+    })
     return router
 }

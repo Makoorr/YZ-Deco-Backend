@@ -40,6 +40,7 @@
     "@medusajs/ui": "^1.0.0",
     "@tanstack/react-query": "4.22.0",
     "@types/multer": "^1.4.8",
+    "aws-sdk": "^2.1515.0",
     "babel-preset-medusa-package": "^1.1.13",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -52,9 +53,12 @@
     "medusa-interfaces": "^1.3.7",
     "medusa-payment-manual": "^1.0.24",
     "medusa-payment-stripe": "^6.0.3",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
     "prism-react-renderer": "^2.0.4",
     "request": "^2.88.2",
-    "typeorm": "^0.3.16"
+    "typeorm": "^0.3.16",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
