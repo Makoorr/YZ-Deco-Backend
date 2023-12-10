@@ -1,4 +1,4 @@
-import { Order, OrderService } from "@medusajs/medusa";
+import { Order, OrderService, Product, authenticate } from "@medusajs/medusa";
 import { Router } from "express"
 import { EntityManager } from "typeorm"
 import cors from "cors"
@@ -16,9 +16,22 @@ const {
 const multer  = require('multer');
 const multerS3  = require('multer-s3');
 
+import { getConfigFile, parseCorsOrigins } from "medusa-core-utils"
+import { ConfigModule } from "@medusajs/medusa/dist/types/global"
+
 export default (rootDirectory, options) => {
     const router = Router()
     const DEBUG = process.env.DEBUG || false;
+
+    const { configModule } = 
+    getConfigFile<ConfigModule>(rootDirectory, "medusa-config")
+    const { projectConfig } = configModule
+
+    const adminCorsOptions = {
+        origin: projectConfig.admin_cors.split(","),
+        credentials: true,
+    }
+
     router.use('/konnect-payUrl',cors())
     router.use(express.json())
     router.get('/api/notification_payment', async function (req, res) {
@@ -169,5 +182,26 @@ export default (rootDirectory, options) => {
             file: {...req.file},
         });
     })
+
+    router.use('/customizedproduct',cors(adminCorsOptions))
+    router.get('/customizedproduct/:id', authenticate(), async function (req, res) {
+        const manager: EntityManager = req.scope.resolve("manager");
+        const productRepo = manager.getRepository(Product);
+        //@ts-ignore
+        const productTest = await productRepo.find({ where: {id: req.params.id}, select: ["has_text", "has_image"] });
+        res.send(
+            ...productTest,
+        );
+    });
+    router.post('/customizedproduct/:id', authenticate(), async function (req, res) {
+        const manager: EntityManager = req.scope.resolve("manager");
+        const productRepo = manager.getRepository(Product);
+        //@ts-ignore
+        const productTest = await productRepo.update(req.params.id, req.body);
+
+        res.send(
+            productTest,
+        );
+    });
     return router
 }
