@@ -203,5 +203,19 @@ export default (rootDirectory, options) => {
             productTest,
         );
     });
+
+    router.use('/store/customizedproduct/', cors())
+    router.get('/store/customizedproduct/:id', async function (req, res) {
+        const manager: EntityManager = req.scope.resolve("manager");
+        const productRepo = manager.getRepository(Product);
+        try {
+            //@ts-ignore
+            const productTest = await productRepo.find({ where: { id: req.params.id }, select: ["has_text", "has_image"] });
+            res.json(productTest); // Sending a JSON response
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
     return router
 }
